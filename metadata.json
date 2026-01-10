@@ -1,0 +1,7 @@
+{
+  "name": "PharmAesthetic - 药学美学馆",
+  "description": "A healing pharmacology aesthetician that transforms medicine into poetry, imagery, and personas through AI analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
