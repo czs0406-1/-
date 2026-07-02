@@ -57,11 +57,18 @@ export const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">药理内核</p>
-              <p className="text-xs leading-relaxed text-slate-500 italic px-2">
-                {identity.scientific_fact}
-              </p>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">药理内核</p>
+                <p className="text-xs leading-relaxed text-slate-500 italic px-2">
+                  {identity.scientific_fact}
+                </p>
+              </div>
+              <div className="pt-1.5">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50/50 border border-rose-100/50 rounded-full text-[10px] font-medium text-rose-500 tracking-wider">
+                  ⚠️ 用药请遵医嘱
+                </span>
+              </div>
             </div>
 
             <div className="hidden md:block w-12 h-px bg-slate-200"></div>
@@ -107,6 +114,14 @@ export const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 底部温馨提示/用药声明 */}
+      <div className="mt-6 text-center animate-in fade-in duration-1000 delay-300 px-4">
+        <p className="text-[11px] md:text-xs text-slate-400 leading-relaxed font-light tracking-wide">
+          ✦ <span className="font-medium text-slate-500">温馨提示：</span>本产品提供之所有信息均源自 AI 美学艺术化拟人创作，仅供审美娱乐与文学共鸣。
+          <span className="text-rose-500 font-medium ml-1.5 whitespace-nowrap">用药请务必严格遵循医嘱，安全第一。</span>
+        </p>
       </div>
     </div>
   );
