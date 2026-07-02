@@ -3,5 +3,8 @@
   "description": "A healing pharmacology aesthetician that transforms medicine into poetry, imagery, and personas through AI analysis.",
   "requestFramePermissions": [
     "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
 }

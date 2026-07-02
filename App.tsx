@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { ResultCard } from './components/ResultCard';
 import { AppStatus, DrugAnalysis } from './types';
@@ -10,7 +10,6 @@ const App: React.FC = () => {
   const [drugName, setDrugName] = useState('');
   const [result, setResult] = useState<DrugAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 动态更新页面背景
   useEffect(() => {
@@ -27,26 +26,17 @@ const App: React.FC = () => {
     processAnalysis(drugName.trim());
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64Data = e.target?.result?.toString().split(',')[1];
-      if (base64Data) {
-        processAnalysis({ data: base64Data, mimeType: file.type });
-      }
-    };
-    reader.readAsDataURL(file);
+  const handleSuggestionClick = (name: string) => {
+    setDrugName(name);
+    processAnalysis(name);
   };
 
-  const processAnalysis = async (input: string | { data: string, mimeType: string }) => {
+  const processAnalysis = async (name: string) => {
     setStatus(AppStatus.LOADING);
     setResult(null);
     setError(null);
     try {
-      const analysis = await analyzeDrug(input);
+      const analysis = await analyzeDrug(name);
       setResult(analysis);
       setStatus(AppStatus.SUCCESS);
     } catch (err: any) {
@@ -71,76 +61,62 @@ const App: React.FC = () => {
   ];
   const [loadingPhrase] = useState(() => LoadingPhrases[Math.floor(Math.random() * LoadingPhrases.length)]);
 
+  const suggestions = ["阿司匹林", "连翘", "薄荷", "枸杞", "人参", "青蒿素"];
+
   return (
     <Layout>
       <div className="space-y-12">
         {status === AppStatus.IDLE || status === AppStatus.ERROR ? (
-          <div className="max-w-xl mx-auto space-y-10 pt-4">
+          <div className="max-w-2xl mx-auto space-y-12 pt-12 pb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
             <div className="text-center space-y-6">
-              <div className="inline-block px-4 py-1.5 bg-white/50 backdrop-blur-sm rounded-full text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase border border-white/20 shadow-sm">
+              <div className="inline-block px-4 py-1.5 bg-white/60 backdrop-blur-md rounded-full text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase border border-white/30 shadow-sm">
                 Herbal Heart-Whisper • 本草心语
               </div>
-              <p className="text-slate-500 leading-relaxed font-light text-lg serif italic">
+              <p className="text-slate-500 leading-relaxed font-light text-xl md:text-2xl serif italic px-4">
                 “万物皆药，唯美治愈。”<br/>
-                <span className="text-sm not-italic font-sans text-slate-400 block mt-2 tracking-wide">
-                  唤醒药物深处的灵魂，聆听分子的第一声叹息。
+                <span className="text-xs md:text-sm not-italic font-sans text-slate-400 block mt-3 tracking-widest uppercase">
+                  唤醒药物深处的灵魂，聆听分子的第一声叹息
                 </span>
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-md p-2.5 rounded-[2rem] shadow-xl shadow-slate-200/20 border border-white/50 flex items-center gap-3 transition-all focus-within:shadow-2xl focus-within:bg-white">
-              <input
-                type="text"
-                placeholder="它是谁？(如: 阿司匹林 / 连翘)"
-                className="flex-1 px-5 py-4 bg-transparent outline-none text-slate-700 placeholder:text-slate-300 serif text-xl"
-                value={drugName}
-                onChange={(e) => setDrugName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              <button
-                onClick={handleSearch}
-                className="bg-slate-900 text-white px-8 py-4 rounded-[1.5rem] hover:bg-slate-800 transition-all active:scale-95 font-medium tracking-widest text-sm shadow-lg shadow-slate-200"
-              >
-                唤醒
-              </button>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200/50"></div>
+            <div className="space-y-6 max-w-xl mx-auto px-2">
+              <div className="bg-white/80 backdrop-blur-md p-1.5 md:p-2 rounded-[1.8rem] md:rounded-[2rem] shadow-xl shadow-slate-200/30 border border-white/60 flex items-center gap-2 md:gap-3 transition-all focus-within:shadow-2xl focus-within:bg-white focus-within:border-slate-300">
+                <input
+                  type="text"
+                  placeholder="如: 阿司匹林 / 连翘..."
+                  className="flex-1 px-4 md:px-6 py-3 md:py-4 bg-transparent outline-none text-slate-700 placeholder:text-slate-300 serif text-base md:text-xl min-w-0"
+                  value={drugName}
+                  onChange={(e) => setDrugName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <button
+                  onClick={handleSearch}
+                  className="bg-slate-900 text-white px-5 md:px-8 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] hover:bg-slate-800 transition-all active:scale-95 font-medium tracking-widest text-xs md:text-sm shadow-lg shadow-slate-200 cursor-pointer whitespace-nowrap"
+                >
+                  唤醒
+                </button>
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase">
-                <span className="bg-transparent px-6 text-slate-300 tracking-[0.5em] font-bold">Or Identify by Vision</span>
-              </div>
-            </div>
 
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className="group border-2 border-dashed border-slate-200/50 rounded-[3rem] p-12 text-center hover:border-slate-400 hover:bg-white/40 transition-all cursor-pointer relative overflow-hidden backdrop-blur-[2px]"
-            >
-              <input 
-                type="file" 
-                className="hidden" 
-                ref={fileInputRef} 
-                accept="image/*"
-                onChange={handleFileUpload}
-              />
-              <div className="space-y-4">
-                <div className="w-16 h-16 bg-white shadow-md rounded-2xl flex items-center justify-center mx-auto group-hover:rotate-6 transition-transform">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-8 h-8 text-slate-400">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-slate-500 font-medium tracking-wide">上传包装或药片图像</p>
-                  <p className="text-[10px] text-slate-300 uppercase tracking-widest mt-1">视觉感知模式</p>
+              {/* 推荐词推荐 */}
+              <div className="text-center space-y-3 pt-2">
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">推荐唤醒：</p>
+                <div className="flex flex-wrap justify-center gap-2.5">
+                  {suggestions.map((name) => (
+                    <button
+                      key={name}
+                      onClick={() => handleSuggestionClick(name)}
+                      className="px-4 py-1.5 bg-white/40 hover:bg-white border border-white/50 hover:border-slate-200 text-xs text-slate-500 rounded-full transition-all duration-300 hover:shadow-sm cursor-pointer hover:scale-105 active:scale-95"
+                    >
+                      {name}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
             {error && (
-              <div className="bg-rose-50 text-rose-600 px-6 py-4 rounded-2xl text-center text-sm border border-rose-100 animate-in fade-in zoom-in-95 duration-300 shadow-sm">
+              <div className="bg-rose-50/80 backdrop-blur-sm text-rose-600 px-6 py-4 rounded-2xl text-center text-sm border border-rose-100/50 animate-in fade-in zoom-in-95 duration-300 shadow-sm max-w-xl mx-auto">
                 {error}
               </div>
             )}
@@ -168,7 +144,7 @@ const App: React.FC = () => {
             <div className="text-center pb-12">
               <button 
                 onClick={reset}
-                className="group inline-flex items-center gap-4 text-slate-400 hover:text-slate-600 text-sm transition-all"
+                className="group inline-flex items-center gap-4 text-slate-400 hover:text-slate-600 text-sm transition-all cursor-pointer"
               >
                 <span className="w-8 h-px bg-slate-300 group-hover:w-16 transition-all duration-500"></span>
                 寻觅下一个灵魂
